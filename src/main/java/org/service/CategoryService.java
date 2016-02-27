@@ -9,11 +9,12 @@ import java.util.Set;
  */
 
 public class CategoryService {
+
     public static enum Category {
         BOOK, FOOD, MEDICAL_PRODUCT, CD, PERFUME
     }
 
-    public static Set<Category> getExemptedCategory() {
+    public static Set<Category> getExemptedCategories() {
         return new HashSet<Category>(Arrays.asList(Category.BOOK, Category.FOOD, Category.MEDICAL_PRODUCT));
     }
 }

@@ -9,11 +9,13 @@ import java.util.*;
  * Created by simonegatti on 27/02/16.
  */
 public class Item {
+
     private String description;
     private Boolean imported;
     private BigDecimal price;
     private Set<CategoryService.Category> categories;
     private List<Tax> taxes;
+
 
     public Item(String description, Boolean imported, BigDecimal price) {
         this.description = description;
@@ -31,9 +33,10 @@ public class Item {
         resetTaxes();
     }
 
+
     private void resetTaxes() {
         taxes = new ArrayList<Tax>();
-        Set<CategoryService.Category> exempedCategory = CategoryService.getExemptedCategory();
+        Set<CategoryService.Category> exempedCategory = CategoryService.getExemptedCategories();
         if(imported) {
             taxes.add(ImportedTax.getTax());
         }
@@ -41,6 +44,7 @@ public class Item {
             taxes.add(GoodTax.getTax());
         }
     }
+
 
     public String getDescription() {
         return description;
@@ -56,6 +60,7 @@ public class Item {
 
     public void setImported(Boolean imported) {
         this.imported = imported;
+        resetTaxes();
     }
 
     public BigDecimal getPrice() {
@@ -72,15 +77,18 @@ public class Item {
 
     public void setCategories(Set<CategoryService.Category> categories) {
         this.categories = categories;
+        resetTaxes();
     }
 
+
     public BigDecimal getTaxAmount() {
-        BigDecimal totalRate = new BigDecimal(0.0d);
+        BigDecimal totalRate = new BigDecimal("0.0");
         for(Iterator<Tax> i = taxes.iterator(); i.hasNext();) {
             totalRate = totalRate.add(i.next().getRate());
         }
         return price.multiply(totalRate);
     }
+
 
     @Override
     public String toString() {
