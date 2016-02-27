@@ -60,4 +60,5 @@ public class ReceiptTest {
         assertEquals("tax amount must be 0", input.getTotal(), new BigDecimal("74.68"));
     }
 
+    
 }
