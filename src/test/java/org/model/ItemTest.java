@@ -5,7 +5,6 @@ import org.service.CategoryService;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;

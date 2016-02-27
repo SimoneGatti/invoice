@@ -35,14 +35,15 @@ public class Item {
 
 
     private void resetTaxes() {
-        taxes = new ArrayList<Tax>();
+        ArrayList<Tax> taxesTemp = new ArrayList<Tax>();
         Set<CategoryService.Category> exempedCategory = CategoryService.getExemptedCategories();
         if(imported) {
-            taxes.add(ImportedTax.getTax());
+            taxesTemp.add(ImportedTax.getTax());
         }
         if(!exempedCategory.removeAll(categories)){
-            taxes.add(GoodTax.getTax());
+            taxesTemp.add(GoodTax.getTax());
         }
+        taxes = taxesTemp;
     }
 
 

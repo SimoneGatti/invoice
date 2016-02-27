@@ -1,7 +1,5 @@
 package org.model;
 
-import org.service.CategoryService;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -10,52 +8,24 @@ import java.util.*;
  */
 public class Receipt {
 
-    private Map<Item, Integer> items;
-    private BigDecimal total;
-    private BigDecimal taxAmount;
+    private Hashtable<Item, Integer> items;
 
 
     public Receipt() {
-        this.items = new HashMap<Item, Integer>();
-        this.total = new BigDecimal("0.00");
-        this.taxAmount = new BigDecimal("0.00");
+        this.items = new Hashtable<Item, Integer>();
     }
 
-    public Receipt(Map<Item, Integer> items) {
+    public Receipt(Hashtable<Item, Integer> items) {
         this.items = items;
-        calculate();
     }
 
 
-    private void calculate() {
-        total = new BigDecimal("0.0");
-        taxAmount = new BigDecimal("0.0");
-        for(Iterator<Map.Entry<Item, Integer>> i = items.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<Item, Integer> nextEntry = i.next();
-            Item nextItem = nextEntry.getKey();
-            BigDecimal number = new BigDecimal(nextEntry.getValue());
-            total = total.add(nextItem.getPrice().multiply(number));
-            taxAmount = taxAmount.add(nextItem.getTaxAmount().multiply(number));
-        }
-        if(taxAmount.remainder(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_UP).equals(new BigDecimal("0.00")))
-        {
-            taxAmount = taxAmount.setScale(2);
-        }
-        else
-        {
-            taxAmount = taxAmount.add(new BigDecimal("0.05").subtract(taxAmount.remainder(new BigDecimal("0.05")))).setScale(2);
-        }
-        total = total.add(taxAmount).setScale(2);
-    }
-
-
-    public Map<Item, Integer> getItems() {
+    public Hashtable<Item, Integer> getItems() {
         return items;
     }
 
-    public void setItems(Map<Item, Integer> items) {
+    public void setItems(Hashtable<Item, Integer> items) {
         this.items = items;
-        calculate();
     }
 
     public void addItem(Item item) {
@@ -67,7 +37,6 @@ public class Receipt {
         {
             items.put(item, 1);
         }
-        calculate();
     }
 
     public void removeItem(Item item) {
@@ -81,21 +50,38 @@ public class Receipt {
                 items.remove(item);
             }
         }
-        calculate();
     }
 
-    public BigDecimal getTotal() {
-        return total;
-    }
 
-    public BigDecimal getTaxAmount() {
-        return taxAmount;
+    public Invoice getInvoice() {
+        String print = "";
+        BigDecimal totalTemp = new BigDecimal("0.0");
+        BigDecimal taxAmountTemp = new BigDecimal("0.0");
+        for(Iterator<Map.Entry<Item, Integer>> i = items.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<Item, Integer> nextEntry = i.next();
+            Item nextItem = nextEntry.getKey();
+            BigDecimal number = new BigDecimal(nextEntry.getValue());
+            print = print + nextEntry.getValue() + " " + nextItem.toString() + "\n";
+            totalTemp = totalTemp.add(nextItem.getPrice().multiply(number));
+            taxAmountTemp = taxAmountTemp.add(nextItem.getTaxAmount().multiply(number));
+        }
+        if(taxAmountTemp.remainder(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_UP).equals(new BigDecimal("0.00")))
+        {
+            taxAmountTemp = taxAmountTemp.setScale(2);
+        }
+        else
+        {
+            taxAmountTemp = taxAmountTemp.add(new BigDecimal("0.05").subtract(taxAmountTemp.remainder(new BigDecimal("0.05")))).setScale(2);
+        }
+        totalTemp = totalTemp.add(taxAmountTemp).setScale(2);
+        print = print + "Sales Taxes: " + taxAmountTemp.toString() + "\n" + "Total: " + totalTemp.toString() + "\n";
+        return new Invoice(print, totalTemp, taxAmountTemp);
     }
-
 
     public String getBill() {
         String result = this.toString();
-        result = result + "Sales Taxes: " + taxAmount.toString() + "\n" + "Total: " + total.toString() + "\n";
+        Invoice invoice = getInvoice();
+
         return result;
     }
 
