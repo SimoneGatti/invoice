@@ -37,7 +37,14 @@ public class Receipt {
             total = total.add(nextItem.getPrice().multiply(number));
             taxAmount = taxAmount.add(nextItem.getTaxAmount().multiply(number));
         }
-        taxAmount = taxAmount.add(new BigDecimal("0.05").subtract(taxAmount.remainder(new BigDecimal("0.05")))).setScale(2);
+        if(taxAmount.remainder(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_UP).equals(new BigDecimal("0.00")))
+        {
+            taxAmount = taxAmount.setScale(2);
+        }
+        else
+        {
+            taxAmount = taxAmount.add(new BigDecimal("0.05").subtract(taxAmount.remainder(new BigDecimal("0.05")))).setScale(2);
+        }
         total = total.add(taxAmount).setScale(2);
     }
 
@@ -66,15 +73,12 @@ public class Receipt {
     public void removeItem(Item item) {
         if(items.containsKey(item))
         {
-            System.out.println("REMOVE:"+items.get(item));
             if(items.get(item) > 1) {
                 items.put(item, items.get(item) - 1);
-                System.out.println("REMOVE:"+items);
             }
             else
             {
                 items.remove(item);
-                System.out.println("REMOVE:"+items);
             }
         }
         calculate();
